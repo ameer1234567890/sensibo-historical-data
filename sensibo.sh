@@ -28,9 +28,12 @@ progress() {
   if [ $percent_remaining -gt $full ]; then
     percent_remaining=$full
   fi
-  echo -ne "$(seq -s '█' $percent_completed | tr -d '[:digit:]')"
-  echo -ne "$(seq -s ' ' $percent_remaining | tr -d '[:digit:]')"
-  echo -ne "\r"
+  printf "["
+  printf %${percent_completed}s | tr " " "#"
+  printf %${percent_remaining}s
+  # echo -ne "$(seq -s '' $percent_completed | tr -d '[:digit:]')"
+  # echo -ne "$(seq -s ' ' $percent_remaining | tr -d '[:digit:]')"
+  printf "]\r"
 }
 
 if [ ! -d './tmp' ]; then
@@ -72,7 +75,6 @@ cat tmp/api.json | sed s/'{"status": "success", "result": {"temperature": \['/''
 cat tmp/api.json | sed s/'^.*}\], "humidity": \['/''/g | sed s/']}}$'/''/g | sed s/'}, {'/'},\n{'/g > tmp/data-humidity.json
 
 lines=$(wc -l < tmp/data-temperature.json)
-lines=20
 # shellcheck disable=SC2009
 log "Lines to process: $lines"
 echo '{"cols":[{"label":"Time","type":"string"},{"label":"Temperature (°C)","type":"number"},{"label":"Humidity (%)","type":"number"}],"rows": [' > tmp/data-temp.json
