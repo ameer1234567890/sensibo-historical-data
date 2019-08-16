@@ -18,6 +18,21 @@ log() {
   fi
 }
 
+progress() {
+  shopt -s checkwinsize; (:);
+  local num_completed=$1
+  local num_total=$2
+  local full=$((COLUMNS - 5))
+  local percent_completed=$((num_completed * full / num_total))
+  local percent_remaining=$((full - percent_completed + 1))
+  if [ $percent_remaining -gt $full ]; then
+    percent_remaining=$full
+  fi
+  echo -ne "$(seq -s '█' $percent_completed | tr -d '[:digit:]')"
+  echo -ne "$(seq -s ' ' $percent_remaining | tr -d '[:digit:]')"
+  echo -ne "\r"
+}
+
 if [ ! -d './tmp' ]; then
   mkdir ./tmp
 fi
@@ -57,9 +72,9 @@ cat tmp/api.json | sed s/'{"status": "success", "result": {"temperature": \['/''
 cat tmp/api.json | sed s/'^.*}\], "humidity": \['/''/g | sed s/']}}$'/''/g | sed s/'}, {'/'},\n{'/g > tmp/data-humidity.json
 
 lines=$(wc -l < tmp/data-temperature.json)
+lines=20
 # shellcheck disable=SC2009
 log "Lines to process: $lines"
-printf "Processing"
 echo '{"cols":[{"label":"Time","type":"string"},{"label":"Temperature (°C)","type":"number"},{"label":"Humidity (%)","type":"number"}],"rows": [' > tmp/data-temp.json
 # shellcheck disable=SC2004
 for (( c=1; c<="$lines"; c++ )); do
@@ -68,7 +83,7 @@ for (( c=1; c<="$lines"; c++ )); do
   else
     line_end=""
   fi
-  printf ".%s" "$c"
+  progress "$c" "$lines"
   temperature=$(sed -n "${c}p" tmp/data-temperature.json | awk '{print $2}' | cut -d ',' -f 1)
   time=$(sed -n "${c}p" tmp/data-temperature.json | awk '{print $4}' | cut -d '"' -f 2)
   time_local=$(date -d "$time" "+%d/%m/%Y, %H:%M:%S")
@@ -76,7 +91,8 @@ for (( c=1; c<="$lines"; c++ )); do
   { printf '{"c":[{"v":"'; printf %s "$time_local"; printf '"},{"v":'; printf %s "$temperature"; printf '},{"v":'; printf %s "$humidity"; printf '}]}%s\n' "$line_end"; } >> tmp/data-temp.json
 done
 echo ']}' >> tmp/data-temp.json
-echo ". Done"
+echo "" # end of progress
+
 cp tmp/data-temp.json data.json
 rm tmp/data-temp.json
 rm tmp/data-temperature.json
