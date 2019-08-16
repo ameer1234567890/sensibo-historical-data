@@ -1,0 +1,10 @@
+language: bash
+os:
+  - linux
+install:
+  - shellcheck --version
+  - go get -u mvdan.cc/sh/cmd/shfmt
+  - touch $TRAVIS_BUILD_DIR/api.conf
+script:
+  - shellcheck $TRAVIS_BUILD_DIR/sensibo.sh
+  - shfmt -i 2 -d -p -ci $TRAVIS_BUILD_DIR/sensibo.sh
