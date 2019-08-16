@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")" || exit 1
+
 # shellcheck disable=SC1091
 source api.conf
 # api.conf file should have the below:
