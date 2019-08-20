@@ -42,8 +42,15 @@ fi
 
 PID_FILE=tmp/sensibo.pid
 if [ -f $PID_FILE ]; then
-  log "Another instance is already running! Exiting..."
-  exit 1
+  pid=$(cat $PID_FILE)
+  ps | awk '{print $1}' | grep "$pid"
+  status="$?"
+  if [ "$status" != 0 ]; then
+    rm $PID_FILE
+  else
+    log "Another instance is already running! Exiting..."
+    exit 1
+  fi
 fi
 trap 'rm -f -- "$PID_FILE"' exit
 echo $$ > "$PID_FILE"
