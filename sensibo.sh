@@ -56,7 +56,7 @@ trap 'rm -f -- "$PID_FILE"' exit
 echo $$ > "$PID_FILE"
 
 log "Requesting Sensibo API data..."
-http_status_code=$(curl -o tmp/api.json -w '%{http_code}\n' https://home.sensibo.com/api/v2/pods/$SENSIBO_DEVICE_ID/historicalMeasurements?apiKey=$SENSIBO_API_KEY)
+http_status_code=$(curl -o tmp/api.json -w '%{http_code}\n' "https://home.sensibo.com/api/v2/pods/$SENSIBO_DEVICE_ID/historicalMeasurements?apiKey=$SENSIBO_API_KEY")
 curl_status_code="$?"
 if [ "$curl_status_code" != 0 ]; then
   log "cURL request failed! cURL status code: $curl_status_code"
