@@ -13,5 +13,5 @@
 * Clone this repository.
 * cd into repo directory.
 * Run `./sensibo.sh` and wait for it to complete.
-* Serve `index.html` and `data.json` via a web server.
+* Serve `www` directory via a web server.
 * You can set the script to run periodically via cron, in order to keep data updated. I suggest intervals >= 5 minutes.
