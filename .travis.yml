@@ -11,5 +11,5 @@ install:
   - shellcheck --version
 
 script:
-  - html5validator index.html
+  - html5validator $TRAVIS_BUILD_DIR/index.html
   - shellcheck $TRAVIS_BUILD_DIR/sensibo.sh
