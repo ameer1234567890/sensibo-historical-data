@@ -102,7 +102,7 @@ done
 echo ']}' >> tmp/data-temp.json
 echo "" # end of progress
 
-cp tmp/data-temp.json data.json
+cp tmp/data-temp.json www/data.json
 rm tmp/data-temp.json
 rm tmp/data-temperature.json
 rm tmp/data-humidity.json
