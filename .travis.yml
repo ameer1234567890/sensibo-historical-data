@@ -1,7 +1,15 @@
-language: bash
-os:
-  - linux
+language: python
+python:
+  - "3.6"
+addons:
+  apt:
+    packages:
+      - openjdk-8-jre  # install Java8 as required by vnu.jar
+
 install:
+  - pip install html5validator
   - shellcheck --version
+
 script:
+  - html5validator index.html
   - shellcheck $TRAVIS_BUILD_DIR/sensibo.sh
