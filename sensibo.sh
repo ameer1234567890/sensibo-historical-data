@@ -35,9 +35,8 @@ progress() {
   printf "]\r"
   if [ $percent_remaining -lt 2 ]; then
     printf "["
-    printf %${percent_completed}s | tr " " "="
-    printf %${percent_remaining}s | tr " " "="
-    printf "="
+    printf %${full}s | tr " " "="
+    printf "=="
     printf "]\r"
   fi
 }
