@@ -29,11 +29,17 @@ progress() {
     percent_remaining=$full
   fi
   printf "["
-  printf %${percent_completed}s | tr " " "#"
+  printf %${percent_completed}s | tr " " "="
+  printf %${percent_remaining}s | tr -s " " ">"
   printf %${percent_remaining}s
-  # echo -ne "$(seq -s '' $percent_completed | tr -d '[:digit:]')"
-  # echo -ne "$(seq -s ' ' $percent_remaining | tr -d '[:digit:]')"
   printf "]\r"
+  if [ $percent_remaining -lt 2 ]; then
+    printf "["
+    printf %${percent_completed}s | tr " " "="
+    printf %${percent_remaining}s | tr " " "="
+    printf "="
+    printf "]\r"
+  fi
 }
 
 if [ ! -d './tmp' ]; then
