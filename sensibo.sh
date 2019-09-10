@@ -22,8 +22,9 @@ progress() {
   shopt -s checkwinsize; (:);
   local num_completed=$1
   local num_total=$2
-  local full=$((COLUMNS - 5))
+  local full=$((COLUMNS - 10))
   local percent_completed=$((num_completed * full / num_total))
+  local perc_comp=$((num_completed * 100 / num_total))
   local percent_remaining=$((full - percent_completed + 1))
   if [ $percent_remaining -gt $full ]; then
     percent_remaining=$full
@@ -32,12 +33,11 @@ progress() {
   printf %${percent_completed}s | tr " " "="
   printf %${percent_remaining}s | tr -s " " ">"
   printf %${percent_remaining}s
-  printf "]\r"
+  printf "$perc_comp%% ]\r"
   if [ $percent_remaining -lt 2 ]; then
     printf "["
     printf %${full}s | tr " " "="
-    printf "=="
-    printf "]\r"
+    printf "=======]\r"
   fi
 }
 
