@@ -41,6 +41,12 @@ progress() {
   fi
 }
 
+# check if the date utility has the required capabilities
+if [ "$(date -d "2019-09-09T15:54:31.996176128Z" "+%d/%m/%Y, %H:%M:%S" 2>/dev/null)" = "" ]; then
+  log "Date utility does not have the required capabilities. Consider installing \"coreutils-date\"!"
+  exit 1
+fi
+
 if [ ! -d './tmp' ]; then
   mkdir ./tmp
 fi
