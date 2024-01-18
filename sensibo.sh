@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# shellcheck disable=SC2116
+
 cd "$(dirname "$0")" || exit 1
 
 # shellcheck disable=SC1091
@@ -96,21 +98,34 @@ lines=$(wc -l < tmp/data-temperature.json)
 # shellcheck disable=SC2009
 log "Lines to process: $lines"
 echo '{"cols":[{"label":"Time","type":"string"},{"label":"Temperature (°C)","type":"number"},{"label":"Humidity (%)","type":"number"}],"rows": [' > tmp/data-temp.json
-# shellcheck disable=SC2004
-for (( c=1; c<="$lines"; c++ )); do
+
+paste -d " " tmp/data-temperature.json tmp/data-humidity.json > tmp/data-combined.json
+
+c=0;
+while read -r line; do
+  c=$(("$c" + 1))
   if [ "$c" != "$lines" ]; then
     line_end=","
   else
     line_end=""
   fi
   progress "$c" "$lines"
-  temperature=$(sed -n "${c}p" tmp/data-temperature.json | awk '{print $4}' | cut -d '}' -f 1)
-  time=$(sed -n "${c}p" tmp/data-temperature.json | awk '{print $2}' | cut -d '"' -f 2)
-  # time_local=$(date -d "$time" "+%d/%m/%Y, %H:%M:%S")
-  time_local=$(date -d "$time" "+%H:%M")
-  humidity=$(sed -n "${c}p" tmp/data-humidity.json | awk '{print $4}' | cut -d '}' -f 1)
+  # shellcheck disable=SC2206
+  arr=($line)
+  closing_curly_bracket="}"
+  comma=","
+  double_quote="\""
+  temperature=$(echo "${arr[3]%"$comma"}")
+  temperature=$(echo "${temperature%"$closing_curly_bracket"}")
+  time=$(echo "${arr[1]%"$comma"}")
+  time=$(echo "${time#"$double_quote"}")
+  time=$(echo "${time%"$double_quote"}")
+  time_local=$(date -d "$time" "+%d/%m/%Y, %H:%M:%S")
+  humidity=$(echo "${arr[7]%"$comma"}")
+  humidity=$(echo "${humidity%"$closing_curly_bracket"}")
   { printf '{"c":[{"v":"'; printf %s "$time_local"; printf '"},{"v":'; printf %s "$temperature"; printf '},{"v":'; printf %s "$humidity"; printf '}]}%s\n' "$line_end"; } >> tmp/data-temp.json
-done
+done <tmp/data-combined.json
+
 echo ']}' >> tmp/data-temp.json
 echo "" # end of progress
 
