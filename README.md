@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/ameer1234567890/sensibo-historical-data.svg?branch=master)](https://travis-ci.org/ameer1234567890/sensibo-historical-data)
-
 #### Works with
 * bash
 * Git Bash on Windows.

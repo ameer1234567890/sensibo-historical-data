@@ -104,10 +104,11 @@ for (( c=1; c<="$lines"; c++ )); do
     line_end=""
   fi
   progress "$c" "$lines"
-  temperature=$(sed -n "${c}p" tmp/data-temperature.json | awk '{print $2}' | cut -d ',' -f 1)
-  time=$(sed -n "${c}p" tmp/data-temperature.json | awk '{print $4}' | cut -d '"' -f 2)
-  time_local=$(date -d "$time" "+%d/%m/%Y, %H:%M:%S")
-  humidity=$(sed -n "${c}p" tmp/data-humidity.json | awk '{print $2}' | cut -d ',' -f 1)
+  temperature=$(sed -n "${c}p" tmp/data-temperature.json | awk '{print $4}' | cut -d '}' -f 1)
+  time=$(sed -n "${c}p" tmp/data-temperature.json | awk '{print $2}' | cut -d '"' -f 2)
+  # time_local=$(date -d "$time" "+%d/%m/%Y, %H:%M:%S")
+  time_local=$(date -d "$time" "+%H:%M")
+  humidity=$(sed -n "${c}p" tmp/data-humidity.json | awk '{print $4}' | cut -d '}' -f 1)
   { printf '{"c":[{"v":"'; printf %s "$time_local"; printf '"},{"v":'; printf %s "$temperature"; printf '},{"v":'; printf %s "$humidity"; printf '}]}%s\n' "$line_end"; } >> tmp/data-temp.json
 done
 echo ']}' >> tmp/data-temp.json
