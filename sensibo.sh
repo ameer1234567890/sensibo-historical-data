@@ -94,12 +94,12 @@ cat tmp/api.json | sed s/'{"status": "success", "result": {"temperature": \['/''
 # shellcheck disable=SC2002
 cat tmp/api.json | sed s/'^.*}\], "humidity": \['/''/g | sed s/']}}$'/''/g | sed s/'}, {'/'},\n{'/g > tmp/data-humidity.json
 
-lines=$(wc -l < tmp/data-temperature.json)
+paste -d " " tmp/data-temperature.json tmp/data-humidity.json > tmp/data-combined.json
+
+lines=$(wc -l < tmp/data-combined.json)
 # shellcheck disable=SC2009
 log "Lines to process: $lines"
 echo '{"cols":[{"label":"Time","type":"string"},{"label":"Temperature (°C)","type":"number"},{"label":"Humidity (%)","type":"number"}],"rows": [' > tmp/data-temp.json
-
-paste -d " " tmp/data-temperature.json tmp/data-humidity.json > tmp/data-combined.json
 
 c=0;
 while read -r line; do
